@@ -2,15 +2,19 @@
 
 A unique personal assistant system that connects to all your digital products and adapts to your behavior.
 
+**Copyright © 2026 NAEL Abdelmajid Yacoub AlNaimat. All Rights Reserved.**
+
 ## Overview
 
-Sigmanael is an intelligent personal assistant chatbot that learns from your behavior and integrates with your digital ecosystem. It provides personalized assistance based on your habits, preferences, and usage patterns.
+Sigmanael is an intelligent personal assistant chatbot that learns from your behavior and integrates with your digital ecosystem. It provides personalized assistance based on your habits, preferences, and usage patterns while operating within ethical and legal boundaries.
 
 ## Features
 
+- **Thinking Pattern Adaptation**: Mirrors your thinking style and communication preferences
 - **Behavior Learning**: Adapts to your personal habits and preferences over time
 - **Multi-Product Integration**: Connects to various digital products (calendar, email, notes, etc.)
 - **Personalized Responses**: Provides context-aware assistance based on your profile
+- **Ethical & Legal Controls**: Built-in safeguards to ensure responsible operation
 - **Extensible Plugin System**: Easy to add new integrations
 - **Privacy-Focused**: All data stored locally by default
 
@@ -77,6 +81,25 @@ response = assistant.chat("What's on my schedule today?")
 print(response)
 ```
 
+### Thinking Pattern Insights
+
+```python
+# Get insights about your thinking patterns
+insights = assistant.get_thinking_insights()
+print(insights['communication_style'])
+print(insights['common_topics'])
+```
+
+### Ethical Controls
+
+```python
+# Enable strict ethical filtering
+assistant.enable_ethical_mode(strict=True)
+
+# Enable privacy mode
+assistant.enable_privacy_mode(enabled=True)
+```
+
 ### Adding Integrations
 
 ```python
@@ -113,9 +136,27 @@ pytest tests/
 
 Contributions are welcome! Please feel free to submit pull requests.
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## Copyright & Ownership
+
+**Copyright © 2026 NAEL Abdelmajid Yacoub AlNaimat. All Rights Reserved.**
+
+See [COPYRIGHT.md](COPYRIGHT.md) for full copyright and ownership information.
+
 ## License
 
 See LICENSE file for details.
+
+## Ethical & Legal Guidelines
+
+This system operates within strict ethical and legal boundaries:
+- Privacy protection and user data sovereignty
+- Responsible AI with no manipulation
+- Legal compliance with data protection regulations
+- Content filtering and safety mechanisms
+
+See [ETHICS_AND_LEGAL.md](ETHICS_AND_LEGAL.md) for complete guidelines.
 
 ## Privacy & Security
 

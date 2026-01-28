@@ -1,4 +1,7 @@
-"""Setup configuration for Sigmanael."""
+"""Setup configuration for Sigmanael.
+
+Copyright © 2026 NAEL Abdelmajid Yacoub AlNaimat. All Rights Reserved.
+"""
 
 from setuptools import setup, find_packages
 
@@ -11,7 +14,7 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 setup(
     name="sigmanael",
     version="0.1.0",
-    author="Sigmanael Team",
+    author="NAEL Abdelmajid Yacoub AlNaimat",
     description="A unique personal assistant chatbot that adapts to your behavior",
     long_description=long_description,
     long_description_content_type="text/markdown",

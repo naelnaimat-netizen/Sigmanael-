@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Optional
 from sigmanael.models import UserProfile, Conversation, Message
 from sigmanael.integrations import BaseIntegration
 from sigmanael.learning import BehaviorLearner
+from sigmanael.learning.thinking_adapter import ThinkingPatternAdapter
 from sigmanael.utils import get_data_dir, load_json, save_json, sanitize_user_id
 
 
@@ -28,6 +29,9 @@ class PersonalAssistant:
         
         # Initialize behavior learner
         self.learner = BehaviorLearner(self.user_id)
+        
+        # Initialize thinking pattern adapter with ethical/legal controls
+        self.thinking_adapter = ThinkingPatternAdapter(self.user_id, self.learner)
         
         # Initialize integrations
         self.integrations: Dict[str, BaseIntegration] = {}
@@ -107,6 +111,19 @@ class PersonalAssistant:
         if not self.current_conversation:
             self.start_conversation()
         
+        # Apply ethical filter
+        ethical_ok, ethical_reason = self.thinking_adapter.apply_ethical_filter(message)
+        if not ethical_ok:
+            return f"I cannot assist with that request. {ethical_reason}\n\n" \
+                   f"I'm designed to operate within ethical guidelines to ensure " \
+                   f"responsible and beneficial assistance."
+        
+        # Apply legal filter
+        legal_ok, legal_reason = self.thinking_adapter.apply_legal_filter(message)
+        if not legal_ok:
+            return f"I cannot assist with that request. {legal_reason}\n\n" \
+                   f"I operate within legal boundaries to ensure lawful use."
+        
         # Record the user message
         self.current_conversation.add_message('user', message)
         
@@ -119,8 +136,11 @@ class PersonalAssistant:
         # Process the message and generate response
         response = self._process_message(message, context)
         
-        # Adapt response based on learned preferences
-        response = self.learner.adapt_response_style(response)
+        # Adapt response based on thinking patterns and learned preferences
+        response = self.thinking_adapter.adapt_response(response, context)
+        
+        # Analyze communication style for future adaptation
+        self.thinking_adapter.analyze_communication_style(message, response)
         
         # Record the assistant response
         self.current_conversation.add_message('assistant', response)
@@ -299,4 +319,30 @@ class PersonalAssistant:
         """
         self.profile.preferences.update(preferences)
         self.profile.updated_at = datetime.now()
+        self._save_profile(self.profile)
+    
+    def get_thinking_insights(self) -> Dict[str, Any]:
+        """Get insights about user's thinking patterns.
+        
+        Returns:
+            Dictionary with comprehensive thinking pattern insights
+        """
+        return self.thinking_adapter.get_thinking_insights()
+    
+    def enable_ethical_mode(self, strict: bool = True) -> None:
+        """Enable strict ethical filtering.
+        
+        Args:
+            strict: Whether to use strict filtering
+        """
+        self.profile.preferences['strict_ethical_mode'] = strict
+        self._save_profile(self.profile)
+    
+    def enable_privacy_mode(self, enabled: bool = True) -> None:
+        """Enable enhanced privacy mode.
+        
+        Args:
+            enabled: Whether to enable privacy mode
+        """
+        self.profile.preferences['privacy_mode'] = enabled
         self._save_profile(self.profile)
