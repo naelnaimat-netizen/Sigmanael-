@@ -15,6 +15,8 @@ This project implements decision-making patterns based on wolf pack behavior, fo
 
 ### Core Framework
 - **[WOLF_THINKING_FRAMEWORK.md](WOLF_THINKING_FRAMEWORK.md)**: Comprehensive guide to wolf-inspired thinking patterns, principles, and strategies
+- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)**: Quick reference guide with checklists, templates, and visual aids
+- **[EXAMPLES.md](EXAMPLES.md)**: Real-world application examples across different domains
 
 ### Implementation
 - **[survival_thinking.py](survival_thinking.py)**: Python implementation of the framework with practical examples
