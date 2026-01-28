@@ -4,7 +4,7 @@ Inspired by wolf pack behavior and natural survival strategies
 """
 
 from enum import Enum
-from typing import List, Dict, Optional, Callable
+from typing import List, Dict, Optional, Callable, Any
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -55,7 +55,7 @@ class PackMember:
     """Represents a team member with specific strengths"""
     name: str
     strengths: List[str]
-    experience_level: int  # 1-10
+    experience_level: float  # 1.0-10.0
     available: bool = True
     current_task: Optional[str] = None
 
@@ -68,7 +68,7 @@ class WolfThinkingEngine:
     def __init__(self, pack_name: str = "Alpha Pack"):
         self.pack_name = pack_name
         self.pack_members: List[PackMember] = []
-        self.territory: Dict[str, any] = {}
+        self.territory: Dict[str, Any] = {}
         self.learned_patterns: List[Dict] = []
         self.resources: Dict[str, int] = {}
         
@@ -104,17 +104,27 @@ class WolfThinkingEngine:
         
         capability_score = 0
         matched_members = []
+        assigned_for_skill = set()  # Track which members are already matched to avoid double-counting
         
         for skill in required_skills:
+            best_match = None
+            best_score = 0
+            
+            # Find best available member for this skill
             for member in available_members:
-                if skill.lower() in [s.lower() for s in member.strengths]:
-                    capability_score += member.experience_level
-                    matched_members.append({
-                        'member': member.name,
-                        'skill': skill,
-                        'experience': member.experience_level
-                    })
-                    break
+                if member.name not in assigned_for_skill and skill.lower() in [s.lower() for s in member.strengths]:
+                    if member.experience_level > best_score:
+                        best_score = member.experience_level
+                        best_match = member
+            
+            if best_match:
+                capability_score += best_match.experience_level
+                matched_members.append({
+                    'member': best_match.name,
+                    'skill': skill,
+                    'experience': best_match.experience_level
+                })
+                assigned_for_skill.add(best_match.name)
         
         return {
             'total_capacity': len(available_members),
@@ -160,6 +170,7 @@ class WolfThinkingEngine:
         """
         assignments = []
         available_members = [m for m in self.pack_members if m.available]
+        assigned_in_session = set()  # Track members assigned in this coordination to prevent double assignment
         
         # Assign roles based on strengths
         for skill in required_skills:
@@ -167,7 +178,7 @@ class WolfThinkingEngine:
             best_score = 0
             
             for member in available_members:
-                if skill.lower() in [s.lower() for s in member.strengths]:
+                if member.name not in assigned_in_session and skill.lower() in [s.lower() for s in member.strengths]:
                     if member.experience_level > best_score:
                         best_score = member.experience_level
                         best_match = member
@@ -180,6 +191,7 @@ class WolfThinkingEngine:
                 })
                 best_match.available = False
                 best_match.current_task = strategy['opportunity']
+                assigned_in_session.add(best_match.name)
         
         return assignments
     
@@ -190,11 +202,14 @@ class WolfThinkingEngine:
         Wolf behavior: Strike at optimal moment with coordinated action
         """
         if not strategy['go_no_go']:
-            return {
+            execution_result = {
                 'status': 'aborted',
                 'reason': 'Strategy assessment failed go/no-go criteria',
                 'timestamp': datetime.now()
             }
+            # Learn from aborted execution
+            self.reflect(strategy, execution_result)
+            return execution_result
         
         try:
             result = execution_func()
@@ -233,14 +248,14 @@ class WolfThinkingEngine:
         
         self.learned_patterns.append(lesson)
         
-        # Make pack members available again
+        # Make pack members available again and update experience
         for member in self.pack_members:
             if member.current_task == strategy['opportunity']:
                 member.available = True
                 member.current_task = None
                 # Increase experience slightly if successful
                 if outcome['status'] == 'success':
-                    member.experience_level = min(10, member.experience_level + 0.1)
+                    member.experience_level = min(10.0, member.experience_level + 0.1)
     
     def _evaluate_risk_reward(self, risk: RiskLevel, reward: RewardLevel) -> DecisionAction:
         """
